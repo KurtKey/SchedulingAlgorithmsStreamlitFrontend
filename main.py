@@ -2,10 +2,24 @@
 import requests
 import streamlit as st
 from gantt_chart_drawer import gantt_chart
+import google.generativeai as genai
 
+GOOGLE_API_KEY = 'AIzaSyCt_Zs5F4mTSGlMtmYuZ8Gz-I36EE_EEw4'
 api_url = "http://127.0.0.1:8000/schedule"
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
+
+
 def fcfsOrSJF_page(algorithm):
     st.subheader(f"{algorithm} Scheduling Algorithm")
+    st.subheader(f"Ask about {algorithm} :")
+    # Text area for user input
+    user_input = st.text_input("Enter your question:")
+    # Button to trigger processing
+    if st.button("Process"):
+        result = model.generate_content(f"here is a question about the algorithm {algorithm}, {user_input}")
+        st.text_area("Result:", result.text, height=200)
+    st.subheader("Try it :")
     # Initialize the data in session state
     if "data" not in st.session_state:
         st.session_state["data"] = {
@@ -43,7 +57,7 @@ def fcfsOrSJF_page(algorithm):
 
         # Create a list of dictionaries representing processes
         processes = [
-            {"Process_ID": i + 1, "Task": i+1, "Arrival_Time": arrival_times[i],
+            {"Process_ID": i + 1, "Task": i + 1, "Arrival_Time": arrival_times[i],
              "Burst_Time": burst_times[i], "Deadline": 0, "Period": 0}
             for i in range(len(burst_times))
         ]
@@ -58,8 +72,17 @@ def fcfsOrSJF_page(algorithm):
         st.text(f"waiting_times: {wts}, average_waiting_time: {awt}")
         gantt_chart(gantt_tab)
 
+
 def dm_rm_edf_llf_page(algorithm):
     st.subheader(f"{algorithm} Scheduling Algorithm")
+    st.subheader(f"Ask about {algorithm} :")
+    # Text area for user input
+    user_input = st.text_input("Enter your question:")
+    # Button to trigger processing
+    if st.button("Process"):
+        result = model.generate_content(f"here is a question about the algorithm {algorithm}, {user_input}")
+        st.text_area("Result:", result.text, height=200)
+    st.subheader("Try it :")
     # Initialize the data in session state
     if "data" not in st.session_state:
         st.session_state["data"] = {
@@ -105,7 +128,7 @@ def dm_rm_edf_llf_page(algorithm):
 
         # Create a list of dictionaries representing processes
         processes = [
-            {"Process_ID": i + 1, "Task": i+1, "Arrival_Time": arrival_times[i],
+            {"Process_ID": i + 1, "Task": i + 1, "Arrival_Time": arrival_times[i],
              "Burst_Time": burst_times[i], "Deadline": deadlines[i], "Period": periods[i]}
             for i in range(len(burst_times))
         ]
@@ -119,7 +142,11 @@ def dm_rm_edf_llf_page(algorithm):
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
 
         st.subheader("Response :")
-        st.text(f"CPU occupation : {cpu_utz}")
+        if cpu_utz > 1:
+            utilizationnote = f"{cpu_utz}, tasks are not schedulable"
+        else:
+            utilizationnote = f"{cpu_utz}, tasks are schedulable"
+        st.text(f"CPU occupation : {utilizationnote}")
         gantt_chart(gantt_tab)
 
 
