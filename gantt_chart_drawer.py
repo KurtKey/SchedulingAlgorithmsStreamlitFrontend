@@ -28,30 +28,14 @@ def gantt_chart(c):
         group_tasks=True,
     )
 
-    # # Add vertical lines to the chart for each value of the x-axis
-    # for time_slot in range(0, current_time_slot + 1):
-    #     fig.add_shape(
-    #         dict(
-    #             type='line',
-    #             x0=time_slot,
-    #             x1=time_slot,
-    #             y0=0,
-    #             y1=len(c),
-    #             line=dict(color='black', width=0.2)
-    #         )
-    #     )
-
     fig.update_layout(
         title_text='Gantt Chart Representation',
         xaxis_title='Time Slots',
         yaxis_title='Tasks',
         xaxis_type='linear',
-        xaxis=dict(range=[0, current_time_slot]),  # Set the range of x-axis
+        xaxis=dict(range=[0, current_time_slot]),
     )
 
     # Display the Gantt chart using Streamlit
     st.plotly_chart(fig)
 
-# Example usage
-#gantt_data = [('Task 1', 2), ('Task 2', 3), ('Task 3', 1)]
-#gantt_chart(gantt_data)
