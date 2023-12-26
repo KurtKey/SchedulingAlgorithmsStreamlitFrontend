@@ -4,7 +4,7 @@ import streamlit as st
 from gantt_chart_drawer import gantt_chart
 import google.generativeai as genai
 
-GOOGLE_API_KEY = 'AIzaSyCt_Zs5F4mTSGlMtmYuZ8Gz-I36EE_EEw4'
+GOOGLE_API_KEY = 'YOUR_API_KEY'
 api_url = "http://127.0.0.1:8000/schedule"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
@@ -61,7 +61,7 @@ def fcfsOrSJF_page(algorithm):
              "Burst_Time": burst_times[i], "Deadline": 0, "Period": 0}
             for i in range(len(burst_times))
         ]
-        if algorithm == "FCFS":
+        if algorithm == "First Come First Served (FCFS)":
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
         elif algorithm == "SJF Without Preemption":
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
@@ -132,13 +132,13 @@ def dm_rm_edf_llf_page(algorithm):
              "Burst_Time": burst_times[i], "Deadline": deadlines[i], "Period": periods[i]}
             for i in range(len(burst_times))
         ]
-        if algorithm == "RM":
+        if algorithm == "Rate Monotonic (RM)":
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
-        elif algorithm == "DM":
+        elif algorithm == "Deadline Monotonic (DM)":
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
-        elif algorithm == "EDF":
+        elif algorithm == "Earliest Deadline First (EDF)":
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
-        elif algorithm == "LLF":
+        elif algorithm == "Least Laxity First (LLF)":
             wts, awt, cpu_utz, gantt_tab = send_request(algorithm, processes)
 
         st.subheader("Response :")
@@ -176,11 +176,11 @@ def main():
 
     # Sidebar
     selected_algorithm = st.sidebar.selectbox("Select Scheduling Algorithm",
-                                              ["EDF", "FCFS", "SJF Without Preemption", "SJF With Preemption", "DM",
-                                               "RM", "LLF"])
+                                              ["Earliest Deadline First (EDF)", "First Come First Served (FCFS)", "SJF Without Preemption", "SJF With Preemption", "Deadline Monotonic (DM)",
+                                               "Rate Monotonic (RM)", "Least Laxity First (LLF)"])
 
     # Main page content
-    if selected_algorithm == "FCFS" or selected_algorithm == "SJF Without Preemption" or selected_algorithm == "SJF With Preemption":
+    if selected_algorithm == "First Come First Served (FCFS)" or selected_algorithm == "SJF Without Preemption" or selected_algorithm == "SJF With Preemption":
         fcfsOrSJF_page(selected_algorithm)
     else:
         dm_rm_edf_llf_page(selected_algorithm)
